@@ -1,0 +1,147 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Simulador Financiero | Chips Motors</title>
+    <link rel="stylesheet" href="style.css">
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400;600&family=Playfair+Display:wght@700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+</head>
+<body>
+    <nav class="navbar">
+        <a href="index.html" class="logo">CHIPS<span>MOTORS</span></a>
+        <ul class="nav-links">
+            <li><a href="index.html">Inicio</a></li>
+            <li><a href="catalogo.html">Inventario</a></li>
+            <li><a href="simulador.html" class="active">Simulador</a></li>
+            <li><a href="contacto.html">Contacto</a></li>
+        </ul>
+        <div class="menu-btn"><i class="fas fa-bars"></i></div>
+    </nav>
+
+    <main class="contact-main">
+        <section class="catalog-header" style="padding-top: 8rem; padding-bottom: 2rem;">
+            <span class="subtitle">Servicios Financieros Elite</span>
+            <h1>PLANIFIQUE SU INVERSIÓN</h1>
+        </section>
+
+        <div class="contact-container">
+            <div class="glass-form">
+                <div class="input-group">
+                    <label>Vehículo de Interés</label>
+                    <select id="sim-car-select" onchange="updateSimPrice()">
+                        </select>
+                </div>
+
+                <div class="input-group">
+                    <label>Precio de Venta ($)</label>
+                    <input type="text" id="sim-price-display" readonly style="font-size: 1.5rem; color: var(--gold); font-weight: 700; background: transparent; border: none;">
+                    <input type="hidden" id="sim-price-raw">
+                </div>
+
+                <div class="input-group">
+                    <label>Pago Inicial (Down Payment)</label>
+                    <input type="range" id="sim-down-range" min="10" max="80" value="20" step="5" oninput="calculateFinancing()">
+                    <div style="display:flex; justify-content: space-between; margin-top: 1rem;">
+                        <span id="down-percent" style="color: var(--gold); font-weight: 600;">20%</span>
+                        <span id="down-value" style="opacity: 0.8;">$0</span>
+                    </div>
+                </div>
+
+                <div class="input-group">
+                    <label>Plazo del Crédito</label>
+                    <select id="sim-term" onchange="calculateFinancing()">
+                        <option value="12">12 Meses</option>
+                        <option value="24">24 Meses</option>
+                        <option value="36">36 Meses</option>
+                        <option value="48" selected>48 Meses</option>
+                        <option value="60">60 Meses</option>
+                    </select>
+                </div>
+            </div>
+
+            <div class="contact-info-panel" style="background: var(--bg-panel); border: 1px solid var(--gold); border-radius: 12px; padding: 3rem; display: flex; flex-direction: column; justify-content: center; align-items: center; box-shadow: var(--shadow-lg);">
+                <div id="selected-car-name" style="margin-bottom: 1rem; font-size: 0.9rem; letter-spacing: 2px; text-transform: uppercase; color: var(--text-muted);">Seleccione un vehículo</div>
+                <span class="subtitle" style="font-size: 0.7rem;">Cuota Mensual Estimada</span>
+                <h2 id="monthly-payment" style="font-size: clamp(2.5rem, 5vw, 4rem); color: var(--gold); margin: 1rem 0;">$0.00</h2>
+                
+                <div style="width: 100%; border-top: 1px solid var(--glass-border); padding-top: 2rem; margin-top: 1rem;">
+                    <div style="display: flex; justify-content: space-between; margin-bottom: 1rem; font-size: 0.85rem;">
+                        <span style="color: var(--text-muted);">Tasa de Interés Anual (APR)</span>
+                        <span style="font-weight: 600; color: #00ff88;">5.9% Fija</span>
+                    </div>
+                    <div style="display: flex; justify-content: space-between; margin-bottom: 2rem; font-size: 0.85rem;">
+                        <span style="color: var(--text-muted);">Monto a Financiar</span>
+                        <span id="amount-to-finance" style="font-weight: 600;">$0.00</span>
+                    </div>
+                    <a href="contacto.html" id="cta-contact" class="cta-btn primary" style="width: 100%; text-align: center;">Solicitar Aprobación</a>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <script src="data.js"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            const select = document.getElementById('sim-car-select');
+            if(!select || typeof carsData === 'undefined') return;
+
+            // 1. Llenar el select con los coches de data.js
+            carsData.forEach(car => {
+                const opt = document.createElement('option');
+                opt.value = car.id;
+                opt.textContent = `${car.make} ${car.model}`;
+                select.appendChild(opt);
+            });
+
+            // 2. Leer parámetro de la URL
+            const urlParams = new URLSearchParams(window.location.search);
+            const carId = urlParams.get('carId');
+
+            if(carId) {
+                select.value = carId;
+            } else {
+                select.selectedIndex = 0;
+            }
+
+            updateSimPrice();
+        });
+
+        function updateSimPrice() {
+            const select = document.getElementById('sim-car-select');
+            const carId = parseInt(select.value);
+            const car = carsData.find(c => c.id === carId);
+
+            if(car) {
+                document.getElementById('sim-price-raw').value = car.price;
+                document.getElementById('sim-price-display').value = `$${car.price.toLocaleString()}`;
+                document.getElementById('selected-car-name').textContent = `${car.make} ${car.model}`;
+                document.getElementById('cta-contact').href = `contacto.html?car=${car.make} ${car.model}`;
+                calculateFinancing();
+            }
+        }
+
+        function calculateFinancing() {
+            const price = parseFloat(document.getElementById('sim-price-raw').value) || 0;
+            const downPercent = parseFloat(document.getElementById('sim-down-range').value);
+            const term = parseInt(document.getElementById('sim-term').value);
+            const annualRate = 0.059;
+            
+            const downValue = price * (downPercent / 100);
+            const principal = price - downValue;
+            const monthlyRate = annualRate / 12;
+            
+            let monthlyPayment = 0;
+            if (principal > 0) {
+                monthlyPayment = principal * (monthlyRate * Math.pow(1 + monthlyRate, term)) / (Math.pow(1 + monthlyRate, term) - 1);
+            }
+
+            document.getElementById('down-percent').textContent = `${downPercent}%`;
+            document.getElementById('down-value').textContent = `$${downValue.toLocaleString()}`;
+            document.getElementById('amount-to-finance').textContent = `$${principal.toLocaleString()}`;
+            document.getElementById('monthly-payment').textContent = `$${monthlyPayment.toLocaleString(undefined, {minimumFractionDigits: 2, maximumFractionDigits: 2})}`;
+        }
+    </script>
+</body>
+</html>
