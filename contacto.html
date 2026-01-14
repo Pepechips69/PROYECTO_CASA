@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <title>Contacto VIP | Chips Motors</title>
+    <link rel="stylesheet" href="style.css">
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;600&family=Playfair+Display:wght@700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+</head>
+<body>
+    <nav class="navbar">
+        <div class="logo">CHIPS<span>MOTORS</span></div>
+        <ul class="nav-links">
+            <li><a href="index.html">Inicio</a></li>
+            <li><a href="catalogo.html">Inventario</a></li>
+            <li><a href="contacto.html" class="active">Contacto</a></li>
+        </ul>
+    </nav>
+
+    <main class="contact-main">
+        <div class="contact-container">
+            <div class="contact-info-panel">
+                <span class="subtitle">Atención Exclusiva</span>
+                <h1>TU PRÓXIMO<br><span style="color:var(--gold)">DESTINO</span></h1>
+                <p>Agende una cita privada en nuestro showroom o solicite detalles técnicos avanzados.</p>
+                
+                <div class="c-card">
+                    <i class="fas fa-map-marker-alt"></i>
+                    <div><strong>Showroom Central</strong><br>Av. de la Excelencia 101, Luxury City</div>
+                </div>
+                <div class="c-card">
+                    <i class="fas fa-phone"></i>
+                    <div><strong>Línea Concierge</strong><br>+1 800 CHIPS MOTORS</div>
+                </div>
+            </div>
+
+            <div class="contact-form-panel">
+                <form class="glass-form" onsubmit="alert('Solicitud enviada. Un agente le contactará en breve.'); return false;">
+                    <div class="input-group">
+                        <label>Nombre Completo</label>
+                        <input type="text" placeholder="Ej. Alejandro Rodríguez" required>
+                    </div>
+                    <div class="input-group">
+                        <label>Correo Electrónico</label>
+                        <input type="email" placeholder="contacto@ejemplo.com" required>
+                    </div>
+                    <div class="input-group">
+                        <label>Vehículo de Interés</label>
+                        <select id="car-interest">
+                            <option value="">Consulta General</option>
+                        </select>
+                    </div>
+                    <div class="input-group">
+                        <label>Mensaje</label>
+                        <textarea rows="4" placeholder="¿En qué podemos ayudarle?" required></textarea>
+                    </div>
+                    <button type="submit" class="cta-btn primary" style="width:100%">Enviar Solicitud VIP</button>
+                </form>
+            </div>
+        </div>
+    </main>
+
+    <script src="data.js"></script>
+    <script src="script.js"></script>
+</body>
+</html>
